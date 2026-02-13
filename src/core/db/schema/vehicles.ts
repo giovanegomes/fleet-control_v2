@@ -8,7 +8,6 @@ import {
   uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core";
-import { createSelectSchema } from "drizzle-zod";
 
 export const fuelTypeEnum = pgEnum("fuel_type", [
   "GAS",
@@ -40,5 +39,3 @@ export const vehicles = pgTable(
     plateUnique: uniqueIndex("vehicles_plate_unique").on(plateNumber),
   }),
 );
-
-export const vehiclesSelectSchema = createSelectSchema(vehicles);
