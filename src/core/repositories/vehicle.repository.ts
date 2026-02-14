@@ -11,7 +11,11 @@ export const vehicleRepository = {
     return db.insert(vehicles).values(data).returning();
   },
   update(id: string, data: VehicleUpdate) {
-    return db.update(vehicles).set(data).where(eq(vehicles.id, id)).returning();
+    return db
+      .update(vehicles)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(vehicles.id, id))
+      .returning();
   },
   delete(id: string) {
     return db.delete(vehicles).where(eq(vehicles.id, id)).returning();
