@@ -1,16 +1,16 @@
 import { db } from "core/db/database";
 import { vehicles } from "../db/schema/vehicles";
-import { VehicleInsert, VehicleUpdate } from "core/validators/vehicle.schema";
+import { VehicleSchema } from "core/validators/vehicle.schema";
 import { eq } from "drizzle-orm";
 
 export const vehicleRepository = {
   get() {
     return db.select().from(vehicles);
   },
-  create(data: VehicleInsert) {
+  create(data: VehicleSchema) {
     return db.insert(vehicles).values(data).returning();
   },
-  update(id: string, data: VehicleUpdate) {
+  update(id: string, data: Partial<VehicleSchema>) {
     return db
       .update(vehicles)
       .set({ ...data, updatedAt: new Date() })

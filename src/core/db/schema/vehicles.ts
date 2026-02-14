@@ -8,14 +8,9 @@ import {
   uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core";
+import { FUEL_TYPES } from "./enums";
 
-export const fuelTypeEnum = pgEnum("fuel_type", [
-  "GAS",
-  "DSL",
-  "ETH",
-  "ELE",
-  "HYB",
-]);
+export const fuelTypeEnum = pgEnum("fuel_type", FUEL_TYPES);
 
 export const vehicles = pgTable(
   "vehicles",
