@@ -8,6 +8,8 @@ export const selectVehicleSchema = createSelectSchema(vehicles);
 export const createVehicleSchema = z.object({
   plateNumber: z
     .string("Plate number is required.")
+    .toUpperCase()
+    .trim()
     .regex(/^[A-Z]{3}-?\d[A-Z0-9]\d{2}$/, "Plate number is invalid."),
   brand: z.string("Brand is required.").min(1, "Brand is required."),
   model: z.string("Model is required.").min(1, "Model is required."),
