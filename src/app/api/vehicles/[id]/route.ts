@@ -1,3 +1,4 @@
+import { handleApiError } from "core/errors/handle-api-errors";
 import { deleteVehicle, updateVehicle } from "core/services/vehicle.service";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -7,15 +8,14 @@ export async function PATCH(
 ) {
   try {
     const { id } = await context.params;
-    const body = await request.json();
-    const vehicle = await updateVehicle(id, body);
+    const data = await request.json();
+    const vehicle = await updateVehicle(id, data);
 
     return NextResponse.json(vehicle, { status: 200 });
   } catch (error) {
-    return NextResponse.json(
-      { error: "Invalid request", details: String(error) },
-      { status: 400 },
-    );
+    const { status, body } = handleApiError(error);
+
+    return NextResponse.json(body, { status });
   }
 }
 
@@ -29,9 +29,8 @@ export async function DELETE(
 
     return new NextResponse(null, { status: 204 });
   } catch (error) {
-    return NextResponse.json(
-      { error: "Invalid request", details: String(error) },
-      { status: 400 },
-    );
+    const { status, body } = handleApiError(error);
+
+    return NextResponse.json(body, { status });
   }
 }

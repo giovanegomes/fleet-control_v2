@@ -1,3 +1,4 @@
+import { handleApiError } from "core/errors/handle-api-errors";
 import { createVehicle, getVehicles } from "core/services/vehicle.service";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -7,23 +8,21 @@ export async function GET() {
 
     return NextResponse.json(vehicles, { status: 200 });
   } catch (error) {
-    return NextResponse.json(
-      { error: "Failed to get vehicles", details: String(error) },
-      { status: 400 },
-    );
+    const { status, body } = handleApiError(error);
+
+    return NextResponse.json(body, { status });
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const vehicle = await createVehicle(body);
+    const data = await request.json();
+    const vehicle = await createVehicle(data);
 
     return NextResponse.json(vehicle, { status: 201 });
   } catch (error) {
-    return NextResponse.json(
-      { error: "Invalid request", details: String(error) },
-      { status: 400 },
-    );
+    const { status, body } = handleApiError(error);
+
+    return NextResponse.json(body, { status });
   }
 }

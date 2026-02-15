@@ -4,6 +4,7 @@ import {
 } from "core/validators/vehicle.schema";
 import { vehicleRepository } from "../repositories/vehicle.repository";
 import { uuidSchema } from "core/db/schema/validators";
+import { NotFound } from "core/errors/not-found";
 
 export async function getVehicles() {
   return vehicleRepository.get();
@@ -21,7 +22,7 @@ export async function updateVehicle(id: string, data: unknown) {
   const result = await vehicleRepository.update(validId, vehicle);
 
   if (result.length === 0) {
-    throw new Error("Vehicle not found.");
+    throw new NotFound(`Vehicle with UUID "${validId}"`);
   }
 
   return result[0];
@@ -32,6 +33,6 @@ export async function deleteVehicle(id: string) {
   const result = await vehicleRepository.delete(validId);
 
   if (result.length === 0) {
-    throw new Error("Vehicle not found.");
+    throw new NotFound(`Vehicle with UUID "${validId}"`);
   }
 }
