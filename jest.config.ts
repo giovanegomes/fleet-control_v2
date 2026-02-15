@@ -201,6 +201,14 @@ const config: Config = {
 
   // Whether to use watchman for file crawling
   // watchman: true,
+
+  rootDir: ".",
+
+  moduleNameMapper: {
+    "^@/(.*)$": "<rootDir>/src/$1",
+  },
+
+  moduleFileExtensions: ["ts", "tsx", "js"],
 };
 
 export default createJestConfig(config);
