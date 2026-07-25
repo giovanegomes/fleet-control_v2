@@ -1,0 +1,39 @@
+---
+description: Drizzle ORM schema, migrations, and query layer conventions
+globs: "**/schema*.ts,**/db/**,**/*.repository.ts,drizzle.config.ts"
+alwaysApply: false
+---
+
+# Drizzle ORM
+
+## Database
+
+- **Dialect**: PostgreSQL (Neon HTTP driver: `drizzle-orm/neon-http`)
+- Connection: `DATABASE_URL` via `neon()` singleton in `src/core/db/database.ts`
+- Export: `db` from `core/db/database` — repositories use this, not raw neon clients
+
+## Schema location & naming
+
+- Schema modules: `src/core/db/schema/` (`vehicles.ts`, `enums.ts`, barrel `index.ts`)
+- Tables via `pgTable`; enums via `pgEnum` + const arrays in `enums.ts`
+- TS fields **camelCase**; SQL columns **snake_case** (`plateNumber` → `plate_number`)
+- Prefer `uuid` PKs with `.defaultRandom()`, timestamps with `{ withTimezone: true }`
+
+```ts
+// ✅ Column naming pattern
+plateNumber: text("plate_number").notNull(),
+isActive: boolean("is_active").notNull().default(true),
+```
+
+## Queries & layers
+
+- **Repositories** (`src/core/repositories/*.repository.ts`): only Drizzle CRUD (`select`/`insert`/`update`/`delete` + `returning`)
+- **Services** (`src/core/services/*.service.ts`): Zod parse, business rules, map DB errors to domain errors
+- Do not put Zod validation or HTTP concerns inside repositories
+
+## Migrations
+
+- Config: `drizzle.config.ts` → `schema: ./src/core/db/schema/index.ts`, `out: ./src/core/db/migrations`
+- SQL + meta live under `src/core/db/migrations/`
+- Tooling: `drizzle-kit` (devDependency)
+- **Do not** edit schema or generate/apply migrations without explicit user confirmation

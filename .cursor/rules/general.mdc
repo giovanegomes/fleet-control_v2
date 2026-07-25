@@ -1,0 +1,51 @@
+---
+description: Stack, architecture, naming, and agent boundaries for fleet-control
+alwaysApply: true
+---
+
+# Fleet Control — Project Rules
+
+## Stack
+
+- **Framework**: Next.js 16 (App Router) + React 19 + TypeScript 5.9
+- **DB**: PostgreSQL via Neon (`@neondatabase/serverless`) + Drizzle ORM 0.45
+- **Validation**: Zod 4 + `drizzle-zod`
+- **Package manager**: npm (`package-lock.json`)
+- **Node**: use version in `.nvmrc` (24.x); Next.js requires `>=20.9.0`
+
+## Architecture
+
+Layered API under `src/`:
+
+```
+Route Handlers (src/app/api/**) → Services (src/core/services/) → Repositories (src/core/repositories/) → Drizzle (src/core/db/)
+```
+
+- Domain logic lives in `src/core/` (db, repositories, services, validators, errors)
+- UI lives in `src/app/` (App Router); UI is still minimal
+- Imports resolve from `src/` (`baseUrl: "src/"`), e.g. `import { db } from "core/db/database"`
+
+## Naming
+
+- Files: **kebab-case** with role suffix — `vehicle.repository.ts`, `vehicle.service.ts`, `handle-api-errors.ts`
+- TS properties: **camelCase**; DB columns: **snake_case**
+- Tables/enums: plural / descriptive SQL names (`vehicles`, `fuel_type`)
+
+## Commands
+
+```bash
+npm run dev        # next dev
+npm run build      # next build
+npm run start      # next start
+npm run lint       # eslint
+npm run lint:fix  # eslint --fix
+```
+
+No test script or test framework is configured yet.
+
+## Agent boundaries
+
+- **Never** change Drizzle schema or run migrations without explicit user confirmation.
+- **Never** commit or push without user review / explicit request.
+- **Never** remove or overwrite `.env`, `drizzle.config.ts`, or lockfiles (`package-lock.json`) without confirmation.
+- Prefer extending existing layers (service → repository → schema) over inventing parallel patterns.

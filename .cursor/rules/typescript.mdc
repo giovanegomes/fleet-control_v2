@@ -1,0 +1,36 @@
+---
+description: TypeScript conventions and typing patterns
+globs: "**/*.ts,**/*.tsx"
+alwaysApply: false
+---
+
+# TypeScript
+
+## Compiler settings
+
+- `strict: false`, but `strictNullChecks: true` — honor null checks; do not weaken them
+- `moduleResolution: "bundler"`, `jsx: "react-jsx"`, path root via `baseUrl: "src/"`
+- Prefer imports like `core/...`, not deep relative `../../../` across layers
+
+## Types vs interfaces
+
+- Prefer **`type`** (especially `z.infer<typeof schema>`) over `interface`
+- Domain input types come from Zod schemas in `src/core/validators/`
+- Avoid inventing duplicate DTOs when a Zod schema already exists
+
+```ts
+// ✅ Existing pattern
+export type VehicleSchema = z.infer<typeof createVehicleSchema>;
+```
+
+## Errors & validation
+
+- Domain errors extend `AppError` (`Conflict`, `NotFound`, `Validation`) with `statusCode` + `code`
+- Services validate with Zod (`.parse`), then call repositories
+- Map unique violations via `isUniqueConstraintError` (Postgres `23505`) to `Conflict`
+- API layer uses `handleApiError` for `AppError`, `ZodError` (422), and fallback 500
+
+## Style notes
+
+- No Prettier/ESLint config checked in yet; keep existing formatting (double quotes, trailing commas)
+- Avoid `any` except local narrow helpers already present (e.g. unique-constraint check)

@@ -1,0 +1,41 @@
+---
+description: React / Next.js component patterns for this project
+globs: "**/*.tsx"
+alwaysApply: false
+---
+
+# React Components
+
+## Patterns in use
+
+- Function components only; default export for App Router pages/layouts
+- Never type props inline — declare a named `type` with the `PropsType` naming pattern (e.g. `RootLayoutPropsType`)
+- App Router: `src/app/layout.tsx`, `src/app/page.tsx`, Route Handlers under `src/app/api/`
+- `lang="pt-br"` on root layout
+
+```tsx
+// ✅ Named props type with the PropsType suffix
+type RootLayoutPropsType = {
+  children: React.ReactNode;
+};
+
+export default function RootLayout({ children }: RootLayoutPropsType) {
+  return (
+    <html lang="pt-br">
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+## Styling & state
+
+- No CSS framework, CSS Modules, or Tailwind configured yet — keep styles minimal unless the user asks
+- No client state library (no Zustand/Redux/Context stores); no TanStack Query yet
+- Prefer Server Components by default; add `"use client"` only when interactivity requires it
+
+## API routes (Route Handlers)
+
+- Thin handlers: parse request → call service → `NextResponse.json` / status codes
+- Always wrap in `try/catch` and use `handleApiError` from `core/errors/handle-api-errors`
+- Typed dynamic params via `RouteContext<"/api/...">` when applicable
